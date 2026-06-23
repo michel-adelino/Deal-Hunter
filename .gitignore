@@ -102,3 +102,15 @@ htmlcov/
 .python-version
 .ruby-version
 .tool-versions
+
+# Generated Documentation (keep hand-written docs in docs/)
+docs/*.generated.*
+docs/build/
+docs/dist/
+docs/_build/
+site/
+
+# Build Artifacts
+*.pdf
+*.zip
+*.tar.gz

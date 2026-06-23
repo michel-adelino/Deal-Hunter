@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     keepa_api_key: str = ""
     serpapi_key: str = ""
     bestbuy_api_key: str = ""
+    walmart_api_key: str = ""
     couponfollow_api_key: str = ""
+
+    sendgrid_api_key: str = ""
+    sendgrid_from_email: str = "noreply@dealhunter.local"
 
     scraperapi_key: str = ""
     proxy_list: str = ""
