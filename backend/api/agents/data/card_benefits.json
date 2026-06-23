@@ -1,0 +1,30 @@
+[
+  {
+    "card_type": "amex_platinum",
+    "merchant_category": "travel",
+    "benefit_type": "credit",
+    "amount": 200,
+    "period": "annual",
+    "source_url": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
+    "last_verified": "2025-01-15",
+    "notes": "Annual airline fee credit"
+  },
+  {
+    "card_type": "apple_card",
+    "merchant_category": "apple_store",
+    "benefit_type": "cashback",
+    "rate": 0.03,
+    "source_url": "https://www.apple.com/apple-card/",
+    "last_verified": "2025-01-15",
+    "notes": "3% Daily Cash on Apple purchases"
+  },
+  {
+    "card_type": "chase_sapphire_preferred",
+    "merchant_category": "travel",
+    "benefit_type": "multiplier",
+    "rate": 2.0,
+    "source_url": "https://www.chase.com/personal/credit-cards/sapphire-preferred",
+    "last_verified": "2025-01-15",
+    "notes": "2x points on travel"
+  }
+]
