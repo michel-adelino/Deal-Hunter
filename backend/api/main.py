@@ -5,7 +5,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from routers import hunt, cards, alerts
+from routers import hunt, cards, alerts, stores
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="DealHunter API", version="1.0.0")
@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(hunt.router)
 app.include_router(cards.router)
 app.include_router(alerts.router)
+app.include_router(stores.router)
 
 
 @app.get("/health")

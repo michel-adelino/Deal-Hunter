@@ -8,6 +8,7 @@ from agents.state import HuntState, PriceSnapshot, DealConfidence
 from config import get_settings
 from lib.bestbuy import BestBuyClient
 from lib.walmart import WalmartClient
+from lib.keepa import KeepaClient
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +111,24 @@ async def fetch_keepa(product: str, api_key: str) -> list[PriceSnapshot]:
     if not api_key:
         return []
 
-    # TODO: Implement Keepa API integration
-    logger.debug("Keepa API not yet implemented")
+    try:
+        client = KeepaClient(api_key)
+        result = await client.search_by_keyword(product)
+        await client.close()
+
+        if result:
+            return [PriceSnapshot(
+                retailer="amazon",
+                url=result.get("url", "https://amazon.com"),
+                current_price=result.get("current_price", 0),
+                price_30d_low=result.get("price_30d_low"),
+                price_90d_low=result.get("price_90d_low"),
+                captured_at=datetime.utcnow().isoformat(),
+                confidence=DealConfidence.VERIFIED,
+            )]
+    except Exception as e:
+        logger.error(f"Keepa fetch error: {str(e)}")
+
     return []
 
 

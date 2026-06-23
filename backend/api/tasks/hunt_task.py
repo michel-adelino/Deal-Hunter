@@ -4,7 +4,9 @@ import json
 import time
 from agents.orchestrator import disambiguate_product
 from agents.state import HuntState
+from agents.product_resolver import product_resolver_node
 from agents.price_tracker import price_tracker_node
+from agents.local_inventory import local_inventory_node
 from agents.card_matcher import card_matcher_node
 from agents.coupon_hunter import coupon_hunter_node
 from agents.portal_optimizer import portal_optimizer_node
@@ -29,7 +31,7 @@ def run_hunt(self, hunt_id: str, products: list[str], user_cards: list[dict]) ->
     return {"hunt_id": hunt_id, "status": "complete"}
 
 
-async def _run_hunt_async(hunt_id: str, products: list[str], user_cards: list[dict]) -> None:
+async def _run_hunt_async(hunt_id: str, products: list[str], user_cards: list[dict], user_zip: str | None = None) -> None:
     print(f"🚀 Starting hunt {hunt_id} with products: {products}")
 
     # Give frontend time to connect to SSE stream
@@ -44,6 +46,7 @@ async def _run_hunt_async(hunt_id: str, products: list[str], user_cards: list[di
                 product_name=product,
                 product_canonical=product,
                 user_cards=user_cards,
+                user_zip=user_zip,
             )
 
             print(f"📢 Publishing hunt_started event...")
@@ -53,6 +56,11 @@ async def _run_hunt_async(hunt_id: str, products: list[str], user_cards: list[di
             })
             print(f"✅ hunt_started published")
 
+            print("📍 Running product resolver...")
+            state_update = await product_resolver_node(state)
+            state = state.model_copy(update=state_update)
+            print(f"✅ Product resolved: UPC={state.upc}, ASIN={state.asin}")
+
             print("📍 Running price tracker...")
             state_update = await price_tracker_node(state)
             state = state.model_copy(update=state_update)
@@ -61,6 +69,16 @@ async def _run_hunt_async(hunt_id: str, products: list[str], user_cards: list[di
                 "count": len(state.prices),
                 "prices": [json.loads(p.model_dump_json()) for p in state.prices],
             })
+
+            print("📍 Running local inventory check...")
+            state_update = await local_inventory_node(state)
+            state = state.model_copy(update=state_update)
+            print(f"✅ Found {len(state.local_inventory)} local stores")
+            if state.local_inventory:
+                await publish_event(hunt_id, "local_inventory_complete", {
+                    "count": len(state.local_inventory),
+                    "inventory": [json.loads(inv.model_dump_json()) for inv in state.local_inventory],
+                })
 
             print("📍 Running card matcher...")
             state_update = await card_matcher_node(state)

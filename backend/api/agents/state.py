@@ -24,6 +24,9 @@ class PriceSnapshot(BaseModel):
     drop_confidence: Optional[float] = None
     captured_at: str
     confidence: DealConfidence
+    store_id: Optional[str] = None
+    original_price: Optional[float] = None
+    in_stock: Optional[bool] = None
 
 
 class CardBenefit(BaseModel):
@@ -75,12 +78,42 @@ class StackedDeal(BaseModel):
     caveats: list[str]
 
 
+class Product(BaseModel):
+    id: Optional[str] = None
+    name: str
+    canonical_name: Optional[str] = None
+    upc: Optional[str] = None
+    asin: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+
+
+class LocalInventory(BaseModel):
+    retailer: str
+    store_id: str
+    store_name: str
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip: Optional[str] = None
+    distance_miles: Optional[float] = None
+    in_stock: bool
+    price: Optional[float] = None
+
+
 class HuntState(BaseModel):
     hunt_id: str
     product_name: str
     product_canonical: Optional[str] = None
+    product: Optional[Product] = None
+    product_id: Optional[str] = None
+    upc: Optional[str] = None
+    asin: Optional[str] = None
+    user_zip: Optional[str] = None
     user_cards: list[dict] = Field(default_factory=list)
     prices: list[PriceSnapshot] = Field(default_factory=list)
+    local_inventory: list[LocalInventory] = Field(default_factory=list)
     card_benefits: list[CardBenefit] = Field(default_factory=list)
     coupons: list[CouponResult] = Field(default_factory=list)
     portal_offers: list[PortalOffer] = Field(default_factory=list)
